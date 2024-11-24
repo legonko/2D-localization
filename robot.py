@@ -8,8 +8,7 @@ from utils import *
 
 
 class Robot():
-    def __init__(self, game, screen, x, y):
-        self.game = game
+    def __init__(self, screen, x, y):
         self.screen = screen
         self.x = x
         self.y = y
@@ -125,7 +124,6 @@ class Robot():
     def sense(self):
         self.p = self.sense_under(self.p, self.x, self.y)
         self.gyro()
-        print_matrix(self.p, self.game.lbl)
 
     def gyro(self):
         dice = random.random()
@@ -174,7 +172,6 @@ class Robot():
             self.y = config.ROWS - 1
 
         self.p = self.set_probs(self.p)
-        print_matrix(self.p, self.game.lbl)
 
     def rotation_r(self):
         kernel_rot_r = np.array([0.1, 0.8, 0.1, 0])
@@ -189,7 +186,6 @@ class Robot():
 
         for _ in range(5):
             self.sense()
-        print_vector(self.p_angpos, self.game.label_r)
 
     def rotation_l(self):
         kernel_rot_l = np.array([0.1, 0, 0.1, 0.8])
@@ -203,4 +199,3 @@ class Robot():
         self.p_angpos = convolve(self.p_angpos, kernel_rot_l)
         for _ in range(5):
             self.sense()
-        print_vector(self.p_angpos, self.game.label_r)

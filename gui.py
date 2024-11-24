@@ -72,7 +72,7 @@ class Game:
         
     def run(self):        
         self.level = Level(self.screen)                    
-        self.robot = Robot(self, self.screen, config.START_POSITION[1], config.START_POSITION[0])
+        self.robot = Robot(self.screen, config.START_POSITION[1], config.START_POSITION[0])
         print_vector(self.robot.p_angpos, self.label_r)
         print_matrix(self.robot.p, self.lbl) 
 
@@ -96,14 +96,19 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         self.robot.rotation_l()
+                        print_vector(self.robot.p_angpos, self.label_r)
                     if event.key == pygame.K_RIGHT:
                         self.robot.rotation_r()
+                        print_vector(self.robot.p_angpos, self.label_r)
                     if event.key == pygame.K_SPACE:
                         self.robot.move_sense()
+                        print_matrix(self.robot.p, self.lbl)
                     if event.key == pygame.K_s:
                         self.robot.sense()
+                        print_matrix(self.robot.p, self.lbl)
                     if event.key == pygame.K_m:
                         self.robot.move()
+                        print_matrix(self.robot.p, self.lbl)
 
             self.level.draw()
             self.robot.draw()        
