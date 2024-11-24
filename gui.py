@@ -3,8 +3,10 @@ import numpy as np
 import sys
 import config
 import random
+
 from level import Level
 from robot import Robot
+from utils import *
 
 
 class Game:
@@ -16,10 +18,10 @@ class Game:
         pygame.display.set_icon(self.programIcon)
         self.clock = pygame.time.Clock()
         self.screen.fill((198, 198, 198))
-        self.gui()
+        self.create_gui()
         self.run()
     
-    def gui(self):
+    def create_gui(self):
         self.btn1 = Button(self.screen, 546, 34, 16, 16, 8, 6)
         self.btn2 = Button(self.screen, 578, 34, 16, 16, 19, 7)
         self.btn3 = Button(self.screen, 610, 34, 16, 16, 16, 4)
@@ -70,7 +72,9 @@ class Game:
         
     def run(self):        
         self.level = Level(self.screen)                    
-        robot = Robot(self, self.screen, config.START_POSITION[1], config.START_POSITION[0])
+        self.robot = Robot(self, self.screen, config.START_POSITION[1], config.START_POSITION[0])
+        print_vector(self.robot.p_angpos, self.label_r)
+        print_matrix(self.robot.p, self.lbl) 
 
         while True:
             for event in pygame.event.get():
@@ -81,54 +85,36 @@ class Game:
                     if pygame.mouse.get_pressed()[0]:
                         mx, my = pygame.mouse.get_pos()
                         if self.btn1.rect.collidepoint(mx, my):
-                            self.new_map()
-                            robot.restart()
+                            self.restart()
                             self.level.mode = 'cave'
                         elif self.btn2.rect.collidepoint(mx, my):
-                            self.new_map()
-                            robot.restart()
+                            self.restart()
                             self.level.mode = 'sand'
                         elif self.btn3.rect.collidepoint(mx, my):
-                            self.new_map()
-                            robot.restart()
+                            self.restart()
                             self.level.mode = 'wood'
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        robot.rotation_l()
+                        self.robot.rotation_l()
                     if event.key == pygame.K_RIGHT:
-                        robot.rotation_r()
+                        self.robot.rotation_r()
                     if event.key == pygame.K_SPACE:
-                        robot.move_sense()
+                        self.robot.move_sense()
                     if event.key == pygame.K_s:
-                        robot.sense()
+                        self.robot.sense()
                     if event.key == pygame.K_m:
-                        robot.move()
+                        self.robot.move()
 
             self.level.draw()
-            robot.draw()        
+            self.robot.draw()        
             pygame.display.update()
-            self.clock.tick(config.FPS)
+            self.clock.tick(config.FPS) 
 
-    def print_matrix(self, m, lbl):
-        p = 0
-        rows, columns = np.shape(m)
-        m = m[2:(rows - 2), 2:(columns - 2)]
-        for i in range(len(m)):
-            res = ('  '.join(['{:.2f}'.format(x) for x in m[i]]))
-            p += 20
-            lbl.create_label(res, 554, 84 + p, (61, 61, 61))
-
-    def print_vector(self, v, lbl):
-        p = 0
-        for i in v:
-            res = ('  '.join(['{:.2f}'.format(i)]))
-            p += 32
-            lbl.create_label(res, 774 + p, 36, (61, 61, 61))
-
-    def new_map(self):
-        config.MAP = [['x'] * config.COLUMNS for _ in range(config.ROWS)]
-        config.START_POSITION = (random.randint(0, config.ROWS - 1), 0)   
-        self.level.noise(config.MAP, 0.4)     
+    def restart(self):
+        self.level.new_map()
+        self.robot.reset()
+        print_matrix(self.robot.p, self.lbl)
+        print_vector(self.robot.p_angpos, self.label_r)
 
 
 class Label:

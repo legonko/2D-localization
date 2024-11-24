@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import config
 import random
+
 from utils import *
 
 
@@ -54,3 +55,8 @@ class Level:
                     self.screen.blit(blocks[mode][0], (x, y))
                 elif col == 'r':
                     self.screen.blit(blocks[mode][1], (x, y))   
+    
+    def new_map(self):
+        config.MAP = [['x'] * config.COLUMNS for _ in range(config.ROWS)]
+        config.START_POSITION = (random.randint(0, config.ROWS - 1), 0)   
+        self.noise(config.MAP, 0.4)  

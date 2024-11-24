@@ -3,6 +3,7 @@ import pygame
 import random
 import config
 from scipy import signal
+
 from utils import *
 
 
@@ -12,7 +13,7 @@ class Robot():
         self.screen = screen
         self.x = x
         self.y = y
-        self.k = 2  
+        self.k = 2
         self.p = np.zeros((12, 16))
         self.p[config.START_POSITION[0]][config.START_POSITION[1]] = 1
         self.p = np.pad(self.p, self.k)             
@@ -22,19 +23,16 @@ class Robot():
         self.image_up = pygame.transform.rotate(self.image, 180)
         self.image_left = pygame.transform.rotate(self.image, -90)
         self.image_right = pygame.transform.rotate(self.image, 90)
-        self.image = [self.image_down, self.image_left, self.image_up, self.image_right]
-        self.game.print_matrix(self.p, self.game.lbl)        
+        self.images = [self.image_down, self.image_left, self.image_up, self.image_right]      
         self.p_angpos = np.zeros(4)
         self.p_angpos[0] = 1
         self.angpos = 0
-        
-        self.game.print_vector(self.p_angpos, self.game.label_r)
         self.sense_under(self.p, self.x, self.y)
 
     def draw(self):
-        self.screen.blit(self.image[self.angpos], (self.x * 32, self.y * 32))
+        self.screen.blit(self.images[self.angpos], (self.x * 32, self.y * 32))
 
-    def restart(self):
+    def reset(self):
         self.x = config.START_POSITION[1]
         self.y = config.START_POSITION[0]
         self.p = np.zeros((12, 16))
@@ -43,9 +41,7 @@ class Robot():
         self.p_angpos = np.zeros(4)
         self.p_angpos[0] = 1
         self.angpos = 0
-        self.draw()        
-        self.game.print_matrix(self.p, self.game.lbl)
-        self.game.print_vector(self.p_angpos, self.game.label_r)        
+        self.draw()                
 
     def sense_under(self, p, x, y):
         pHit = 0.8
@@ -129,7 +125,7 @@ class Robot():
     def sense(self):
         self.p = self.sense_under(self.p, self.x, self.y)
         self.gyro()
-        self.game.print_matrix(self.p, self.game.lbl)
+        print_matrix(self.p, self.game.lbl)
 
     def gyro(self):
         dice = random.random()
@@ -178,7 +174,7 @@ class Robot():
             self.y = config.ROWS - 1
 
         self.p = self.set_probs(self.p)
-        self.game.print_matrix(self.p, self.game.lbl)
+        print_matrix(self.p, self.game.lbl)
 
     def rotation_r(self):
         kernel_rot_r = np.array([0.1, 0.8, 0.1, 0])
@@ -191,9 +187,9 @@ class Robot():
         self.angpos %= 4
         self.p_angpos = convolve(self.p_angpos, kernel_rot_r)
 
-        for i in range(5):
+        for _ in range(5):
             self.sense()
-        self.game.print_vector(self.p_angpos, self.game.label_r)
+        print_vector(self.p_angpos, self.game.label_r)
 
     def rotation_l(self):
         kernel_rot_l = np.array([0.1, 0, 0.1, 0.8])
@@ -207,4 +203,4 @@ class Robot():
         self.p_angpos = convolve(self.p_angpos, kernel_rot_l)
         for _ in range(5):
             self.sense()
-        self.game.print_vector(self.p_angpos, self.game.label_r)
+        print_vector(self.p_angpos, self.game.label_r)
