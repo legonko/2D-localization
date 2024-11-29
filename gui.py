@@ -110,7 +110,7 @@ class Game:
                         self.robot.move()
                         print_matrix(self.robot.p, self.lbl)
 
-            self.level.draw()
+            self.level.create_map()
             self.robot.draw()        
             pygame.display.update()
             self.clock.tick(config.FPS) 

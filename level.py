@@ -22,9 +22,6 @@ class Level:
                 if rdn < prob:
                     arr[i][j] = 'r'        
 
-    def draw(self):
-        self.create_map(self.mode)
-
     def get_image(self, sheet, row, column, width, height, scale):
         image = pygame.Surface((width, height)).convert_alpha()
         image.blit(sheet, (0, 0), (column * width, row * height, width, height))
@@ -43,7 +40,7 @@ class Level:
         self.spruce = self.get_image(self.sprite_sheet_image, 5, 16, 16, 16, 2)
         self.oak = self.get_image(self.sprite_sheet_image, 4, 16, 16, 16, 2)
                 
-    def create_map(self, mode):
+    def create_map(self):
         for row_index, row in enumerate(config.MAP):
             for col_index, col in enumerate(row):
                 x = col_index * 32
@@ -52,9 +49,9 @@ class Level:
                           'sand':(self.sand, self.gravel), 
                           'wood':(self.oak, self.spruce)}
                 if col == 'x':
-                    self.screen.blit(blocks[mode][0], (x, y))
+                    self.screen.blit(blocks[self.mode][0], (x, y))
                 elif col == 'r':
-                    self.screen.blit(blocks[mode][1], (x, y))   
+                    self.screen.blit(blocks[self.mode][1], (x, y))   
     
     def new_map(self):
         config.MAP = [['x'] * config.COLUMNS for _ in range(config.ROWS)]
